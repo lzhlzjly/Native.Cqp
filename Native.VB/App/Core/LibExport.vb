@@ -12,7 +12,6 @@ Imports Native.VB.Native.VB.App.Model
 Namespace Native.Csharp.App.Core
     Public Class LibExport
         Private Shared _instance As Lazy(Of LibExport) = New Lazy(Of LibExport)(Function() New LibExport())
-        'Private Shared _ini As Event_AppInitialize = Event_AppInitialize.Instance
 
         Public Shared ReadOnly Property Instance As LibExport
             Get
@@ -24,29 +23,29 @@ Namespace Native.Csharp.App.Core
 
         End Sub
 
-        'Public Shared Event AppInfoEventHandler As EventHandler(Of AppInfoEventArgs)
-        'Public Shared Event AppInitializeEventHandler As EventHandler(Of AppInitializeEventArgs)
-        'Public Shared Event CqStartup As EventHandler(Of EventArgs)
-        'Public Shared Event CqExit As EventHandler(Of EventArgs)
-        'Public Shared Event AppEnable As EventHandler(Of EventArgs)
-        'Public Shared Event AppDisable As EventHandler(Of EventArgs)
-        'Public Shared Event ReceiveFriendMessage As EventHandler(Of PrivateMessageEventArgs)
-        'Public Shared Event ReceiveQnlineStatusMessage As EventHandler(Of PrivateMessageEventArgs)
-        'Public Shared Event ReceiveGroupPrivateMessage As EventHandler(Of PrivateMessageEventArgs)
-        'Public Shared Event ReceiveDiscussPrivateMessage As EventHandler(Of PrivateMessageEventArgs)
-        'Public Shared Event ReceiveGroupMessage As EventHandler(Of GroupMessageEventArgs)
-        'Public Shared Event ReceiveDiscussMessage As EventHandler(Of DiscussMessageEventArgs)
-        'Public Shared Event ReceiveFileUploadMessage As EventHandler(Of FileUploadMessageEventArgs)
-        'Public Shared Event ReceiveManageIncrease As EventHandler(Of GroupManageAlterEventArgs)
-        'Public Shared Event ReceiveManageDecrease As EventHandler(Of GroupManageAlterEventArgs)
-        'Public Shared Event ReceiveMemberLeave As EventHandler(Of GroupMemberAlterEventArgs)
-        'Public Shared Event ReceiveMemberRemove As EventHandler(Of GroupMemberAlterEventArgs)
-        'Public Shared Event ReceiveMemberJoin As EventHandler(Of GroupMemberAlterEventArgs)
-        'Public Shared Event ReceiveMemberInvitee As EventHandler(Of GroupMemberAlterEventArgs)
-        'Public Shared Event ReceiveFriendIncrease As EventHandler(Of FriendIncreaseEventArgs)
-        'Public Shared Event ReceiveFriendAdd As EventHandler(Of FriendAddRequestEventArgs)
-        'Public Shared Event ReceiveGroupAddApply As EventHandler(Of GroupAddRequestEventArgs)
-        'Public Shared Event ReceiveGroupAddInvitee As EventHandler(Of GroupAddRequestEventArgs)
+        Public Shared Event AppInfoEventHandler As EventHandler(Of AppInfoEventArgs)
+        Public Shared Event AppInitializeEventHandler As EventHandler(Of AppInitializeEventArgs)
+        Public Shared Event CqStartup As EventHandler(Of EventArgs)
+        Public Shared Event CqExit As EventHandler(Of EventArgs)
+        Public Shared Event AppEnable As EventHandler(Of EventArgs)
+        Public Shared Event AppDisable As EventHandler(Of EventArgs)
+        Public Shared Event ReceiveFriendMessage As EventHandler(Of PrivateMessageEventArgs)
+        Public Shared Event ReceiveQnlineStatusMessage As EventHandler(Of PrivateMessageEventArgs)
+        Public Shared Event ReceiveGroupPrivateMessage As EventHandler(Of PrivateMessageEventArgs)
+        Public Shared Event ReceiveDiscussPrivateMessage As EventHandler(Of PrivateMessageEventArgs)
+        Public Shared Event ReceiveGroupMessage As EventHandler(Of GroupMessageEventArgs)
+        Public Shared Event ReceiveDiscussMessage As EventHandler(Of DiscussMessageEventArgs)
+        Public Shared Event ReceiveFileUploadMessage As EventHandler(Of FileUploadMessageEventArgs)
+        Public Shared Event ReceiveManageIncrease As EventHandler(Of GroupManageAlterEventArgs)
+        Public Shared Event ReceiveManageDecrease As EventHandler(Of GroupManageAlterEventArgs)
+        Public Shared Event ReceiveMemberLeave As EventHandler(Of GroupMemberAlterEventArgs)
+        Public Shared Event ReceiveMemberRemove As EventHandler(Of GroupMemberAlterEventArgs)
+        Public Shared Event ReceiveMemberJoin As EventHandler(Of GroupMemberAlterEventArgs)
+        Public Shared Event ReceiveMemberInvitee As EventHandler(Of GroupMemberAlterEventArgs)
+        Public Shared Event ReceiveFriendIncrease As EventHandler(Of FriendIncreaseEventArgs)
+        Public Shared Event ReceiveFriendAdd As EventHandler(Of FriendAddRequestEventArgs)
+        Public Shared Event ReceiveGroupAddApply As EventHandler(Of GroupAddRequestEventArgs)
+        Public Shared Event ReceiveGroupAddInvitee As EventHandler(Of GroupAddRequestEventArgs)
 
         <DllExport(ExportName:="AppInfo", CallingConvention:=CallingConvention.StdCall)>
         Private Shared Function AppInfo() As String
@@ -75,18 +74,21 @@ Namespace Native.Csharp.App.Core
         <DllExport(ExportName:="_eventExit", CallingConvention:=CallingConvention.StdCall)>
         Private Shared Function EventExit() As Integer
             RaiseEvent CqExit(Instance, New EventArgs())
+            Event_AppStatus.Instance.CqExit(Instance, New EventArgs())
             Return 0
         End Function
 
         <DllExport(ExportName:="_eventEnable", CallingConvention:=CallingConvention.StdCall)>
         Private Shared Function EventEnable() As Integer
             RaiseEvent AppEnable(Instance, New EventArgs())
+            Event_AppStatus.Instance.AppEnable(Instance, New EventArgs())
             Return 0
         End Function
 
         <DllExport(ExportName:="_eventDisable", CallingConvention:=CallingConvention.StdCall)>
         Private Shared Function EventDisable() As Integer
             RaiseEvent AppDisable(Instance, New EventArgs())
+            Event_AppStatus.Instance.AppDisable(Instance, New EventArgs())
             Return 0
         End Function
 
@@ -101,12 +103,16 @@ Namespace Native.Csharp.App.Core
             Select Case subType
                 Case 11
                     RaiseEvent ReceiveFriendMessage(Instance, args)
+                    Event_PrivateMessage.Instance.ReceiveFriendMessage(Instance, args)
                 Case 1
                     RaiseEvent ReceiveQnlineStatusMessage(Instance, args)
+                    Event_PrivateMessage.Instance.ReceiveOnlineStatusMessage(Instance, args)
                 Case 2
                     RaiseEvent ReceiveGroupPrivateMessage(Instance, args)
+                    Event_PrivateMessage.Instance.ReceiveGroupPrivateMessage(Instance, args)
                 Case 3
                     RaiseEvent ReceiveDiscussPrivateMessage(Instance, args)
+                    Event_PrivateMessage.Instance.ReceiveDiscussPrivateMessage(Instance, args)
                 Case Else
                     Common.CqApi.AddLoger(LogerLevel.Info, "提示", "新私聊类型, 请反馈给开发者或自行添加!")
             End Select
@@ -132,6 +138,7 @@ Namespace Native.Csharp.App.Core
             Select Case subType
                 Case 1
                     RaiseEvent ReceiveGroupMessage(Instance, args)
+                    Event_GroupMessage.Instance.ReceiveGroupMessage(Instance, args)
                 Case Else
                     Common.CqApi.AddLoger(LogerLevel.Info, "提示", "新群消息类型, 请反馈给开发者或自行添加!")
             End Select
@@ -151,6 +158,7 @@ Namespace Native.Csharp.App.Core
             Select Case subType
                 Case 1
                     RaiseEvent ReceiveDiscussMessage(Instance, args)
+                    Event_DiscussMessage.Instance.ReceiveDiscussMessage(Instance, args)
                 Case Else
                     Common.CqApi.AddLoger(LogerLevel.Info, "提示", "新讨论组消息类型, 请反馈给开发者或自行添加!")
             End Select
@@ -166,6 +174,7 @@ Namespace Native.Csharp.App.Core
             args.FromQQ = fromQQ
             args.File = Common.CqApi.GetFile(file)
             RaiseEvent ReceiveFileUploadMessage(Instance, args)
+            Event_GroupMessage.Instance.ReceiveGroupFileUpload(Instance, args)
             Return CInt((If(args.Handled, MessageHanding.Intercept, MessageHanding.Ignored)))
         End Function
 
@@ -180,8 +189,10 @@ Namespace Native.Csharp.App.Core
             Select Case subType
                 Case 1
                     RaiseEvent ReceiveManageDecrease(Instance, args)
+                    Event_GroupMessage.Instance.ReceiveGroupManageDecrease(Instance, args)
                 Case 2
                     RaiseEvent ReceiveManageIncrease(Instance, args)
+                    Event_GroupMessage.Instance.ReceiveGroupManageIncrease(Instance, args)
                 Case Else
                     Common.CqApi.AddLoger(LogerLevel.Info, "提示", "新管理事件类型, 请反馈给开发者或自行添加!")
             End Select
@@ -202,8 +213,10 @@ Namespace Native.Csharp.App.Core
                 Case 1
                     fromQQ = beingOperateQQ
                     RaiseEvent ReceiveMemberLeave(Instance, args)
+                    Event_GroupMessage.Instance.ReceiveGroupMemberLeave(Instance, args)
                 Case 2
                     RaiseEvent ReceiveMemberRemove(Instance, args)
+                    Event_GroupMessage.Instance.ReceiveGroupMemberRemove(Instance, args)
                 Case Else
                     Common.CqApi.AddLoger(LogerLevel.Info, "提示", "新群成员减少事件类型, 请反馈给开发者或自行添加!")
             End Select
@@ -223,8 +236,10 @@ Namespace Native.Csharp.App.Core
             Select Case subType
                 Case 1
                     RaiseEvent ReceiveMemberJoin(Instance, args)
+                    Event_GroupMessage.Instance.ReceiveGroupMemberJoin(Instance, args)
                 Case 2
                     RaiseEvent ReceiveMemberInvitee(Instance, args)
+                    Event_GroupMessage.Instance.ReceiveGroupMemberInvitee(Instance, args)
                 Case Else
                     Common.CqApi.AddLoger(LogerLevel.Info, "提示", "新群成员增加事件类型, 请反馈给开发者或自行添加!")
             End Select
@@ -242,6 +257,7 @@ Namespace Native.Csharp.App.Core
             Select Case subType
                 Case 1
                     RaiseEvent ReceiveFriendIncrease(Instance, args)
+                    Event_FriendMessage.Instance.ReceiveFriendIncrease(Instance, args)
                 Case Else
                     Common.CqApi.AddLoger(LogerLevel.Info, "提示", "新好友事件类型, 请反馈给开发者或自行添加!")
             End Select
@@ -261,6 +277,7 @@ Namespace Native.Csharp.App.Core
             Select Case subType
                 Case 1
                     RaiseEvent ReceiveFriendAdd(Instance, args)
+                    Event_FriendMessage.Instance.ReceiveFriednAddRequest(Instance, args)
                 Case Else
                     Common.CqApi.AddLoger(LogerLevel.Info, "提示", "新好友添加请求事件类型, 请反馈给开发者或自行添加!")
             End Select
@@ -281,8 +298,10 @@ Namespace Native.Csharp.App.Core
             Select Case subType
                 Case 1
                     RaiseEvent ReceiveGroupAddApply(Instance, args)
+                    Event_GroupMessage.Instance.ReceiveGroupAddApply(Instance, args)
                 Case 2
                     RaiseEvent ReceiveGroupAddInvitee(Instance, args)
+                    Event_GroupMessage.Instance.ReceiveGroupAddInvitee(Instance, args)
                 Case Else
                     Common.CqApi.AddLoger(LogerLevel.Info, "提示", "新群添加请求事件类型, 请反馈给开发者或自行添加!")
             End Select

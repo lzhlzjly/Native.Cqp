@@ -16,12 +16,11 @@ Namespace Native.VB.App.[Event]
         End Property
 
         Private Sub New()
-            'AddHandler LibExport.AppInfoEventHandler, AddressOf AppInfo
         End Sub
 
         Public Sub AppInfo(ByVal sender As Object, ByVal e As AppInfoEventArgs)
             e.ApiVer = 9
-            e.AppId = "native.vb"
+            e.AppId = "Native.VB"
         End Sub
 
         Public Sub Initialize(ByVal sender As Object, ByVal e As AppInitializeEventArgs)
